@@ -7,58 +7,62 @@ const s = ( sketch ) => {
 
   let video;
   let poseNet;
-  let pose;
-  let skeleton;
+  let poses = [];
 
   sketch.setup = () => {
     sketch.createCanvas(640, 480);
-    video = sketch.createCapture(p5.video)
-    video.hide();
+    // sketch.getContext("2d");
+    video = sketch.createCapture(p5.VIDEO)
+    
     poseNet = ml5.poseNet(video, modelLoaded);
-    poseNet.on('pose', gotPoses);
+    poseNet.on('pose', function(results) {
+      poses = results;
+    });
+
+    video.hide();
   };
 
   function modelLoaded() {
     console.log('poseNet ready')
   }
 
-  function gotPoses(poses){
-    if (poses.length > 0) {
-      pose = poses[0].pose;
-      skeleton = poses[0].skeleton;
+  sketch.draw = () => {
+    sketch.image(video, 0, 0);
+    
+    drawKeypoints();
+    drawSkeleton();
+  };
+
+  function drawKeypoints() {
+    for (let i = 0; i < poses.length; i += 1) {
+      // For each pose detected, loop through all the keypoints
+      const pose = poses[i].pose;
+      for (let j = 0; j < pose.keypoints.length; j += 1) {
+        // A keypoint is an object describing a body part (like rightArm or leftShoulder)
+        const keypoint = pose.keypoints[j];
+        // Only draw an ellipse is the pose probability is bigger than 0.2
+        if (keypoint.score > 0.2) {
+          sketch.fill(255, 0, 0);
+          sketch.noStroke();
+          sketch.ellipse(keypoint.position.x, keypoint.position.y, 10, 10);
+        }
+      }
     }
   }
 
-  sketch.draw = () => {
-    sketch.image(video, 0, 0);
-
-    if (pose) {
-      let eyeR = pose.rightEye;
-      let eyeL = pose.leftEye;
-      let d = sketch.dist(eyeR.x, eyeR.y, eyeL.x, eyeL.y);
-      sketch.fill(255, 0, 0);
-      sketch.ellipse(pose.nose.x, pose.nose.y, d);
-      sketch.fill(0, 0, 255);
-      sketch.ellipse(pose.rightWrist.x, pose.rightWrist.y, 32);
-      sketch.ellipse(pose.leftWrist.x, pose.leftWrist.y, 32);
-      
-      for (let i = 0; i < pose.keypoints.length; i++) {
-        let x = pose.keypoints[i].position.x;
-        let y = pose.keypoints[i].position.y;
-        sketch.fill(0,255,0);
-        sketch.ellipse(x,y,16,16);
-      }
-      
-      for (let i = 0; i < skeleton.length; i++) { 
-        let a = skeleton[i][0];
-        let b = skeleton[i][1];
-        sketch.strokeWeight(2);
-        sketch.stroke(255);
-        sketch.line(a.position.x, a.position.y,b.position.x,b.position.y);     
+  function drawSkeleton() {
+    // Loop through all the skeletons detected
+    for (let i = 0; i < poses.length; i += 1) {
+      const skeleton = poses[i].skeleton;
+      // For every skeleton, loop through all body connections
+      for (let j = 0; j < skeleton.length; j += 1) {
+        const partA = skeleton[j][0];
+        const partB = skeleton[j][1];
+        sketch.stroke(255, 0, 0);
+        sketch.line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
       }
     }
-
-  };
+  }
 };
 
 let myp5 = new p5(s);
