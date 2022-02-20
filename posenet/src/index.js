@@ -6,58 +6,49 @@ import p5 from 'p5';
 const s = ( sketch ) => {
 
   let video;
-  let poseNet;
-  let pose;
-  let skeleton;
+  let detector;
+  let detections = [];
 
   sketch.setup = () => {
     sketch.createCanvas(640, 480);
-    video = sketch.createCapture(p5.video)
+    video = sketch.createCapture(p5.VIDEO, videoReady)
     video.hide();
-    poseNet = ml5.poseNet(video, modelLoaded);
-    poseNet.on('pose', gotPoses);
   };
-
-  function modelLoaded() {
-    console.log('poseNet ready')
+  
+  
+  
+  function videoReady() {
+    // Models available are 'cocossd', 'yolo'
+    detector = ml5.objectDetector('cocossd', modelReady);
   }
 
-  function gotPoses(poses){
-    if (poses.length > 0) {
-      pose = poses[0].pose;
-      skeleton = poses[0].skeleton;
+  function gotDetections(error, results) {
+    if (error) {
+      console.error(error);
     }
+    detections = results;
+    detector.detect(video, gotDetections);
+  }
+
+  function modelReady() {
+    detector.detect(video, gotDetections);
   }
 
   sketch.draw = () => {
     sketch.image(video, 0, 0);
 
-    if (pose) {
-      let eyeR = pose.rightEye;
-      let eyeL = pose.leftEye;
-      let d = sketch.dist(eyeR.x, eyeR.y, eyeL.x, eyeL.y);
-      sketch.fill(255, 0, 0);
-      sketch.ellipse(pose.nose.x, pose.nose.y, d);
-      sketch.fill(0, 0, 255);
-      sketch.ellipse(pose.rightWrist.x, pose.rightWrist.y, 32);
-      sketch.ellipse(pose.leftWrist.x, pose.leftWrist.y, 32);
-      
-      for (let i = 0; i < pose.keypoints.length; i++) {
-        let x = pose.keypoints[i].position.x;
-        let y = pose.keypoints[i].position.y;
-        sketch.fill(0,255,0);
-        sketch.ellipse(x,y,16,16);
-      }
-      
-      for (let i = 0; i < skeleton.length; i++) { 
-        let a = skeleton[i][0];
-        let b = skeleton[i][1];
-        sketch.strokeWeight(2);
-        sketch.stroke(255);
-        sketch.line(a.position.x, a.position.y,b.position.x,b.position.y);     
-      }
+    
+    for (let i = 0; i < detections.length; i += 1) {
+      const object = detections[i];
+      sketch.stroke(0, 255, 0);
+      sketch.strokeWeight(4);
+      sketch.noFill();
+      sketch.rect(object.x, object.y, object.width, object.height);
+      sketch.noStroke();
+      sketch.fill(255);
+      sketch.textSize(24);
+      sketch.text(object.label, object.x + 10, object.y + 24);
     }
-
   };
 };
 
