@@ -7,27 +7,30 @@ import SketchPose from './cv/pose_detect.js';
 class App extends React.Component {
   constructor(props) {
     super(props)
-    this.objRef = React.createRef()
-    this.poseRef = React.createRef()
+    this.cvRef = React.createRef()
   }
 
   SketchObj = SketchObj;
   SketchPose = SketchPose;
 
+  changeModel = () =>{
+    this.cvP5.remove()
+    this.cvP5 = new p5(this.SketchPose, this.cvRef.current)
+  }
+  
   componentDidMount() {
-    this.objP5 = new p5(this.SketchObj, this.objRef.current)
-    this.poseP5 = new p5(this.SketchPose, this.poseRef.current)
+    this.cvP5 = new p5(this.SketchObj, this.cvRef.current)
   }
 
   render() {
     return (
       <div>
-        <div ref={this.objRef}>
-      
+        <div ref={this.cvRef}>
         </div>
-        <div ref={this.poseRef}>
-      
-        </div>
+        <button
+          type="button"
+          onClick={this.changeModel}
+        >Change Model</button>
       </div>
       
     )
