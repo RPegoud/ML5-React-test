@@ -10,7 +10,7 @@ let pose;
 let skeleton;
 
 function setup(){
-  const sketch = new p5();
+  const p = new p5();
   sketch.createCanvas(640,480);
   video = sketch.createCapture(p5.video);
   video.hide();
