@@ -11,3 +11,38 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.button {
+  background-color: #3b38fc; /* Green */
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.button0 {
+  padding: 12px 28px;
+}
+
+.button1 {
+  padding: 12px 28px;
+  background-color: #73AD21; 
+}
+
+.button2 {
+  padding: 12px 28px;
+  background-color: #a3000e; 
+}
+
+.center {
+  margin: auto;
+  width: 80%;
+  border: 3px solid #73AD21;
+  padding: 10px;
+  margin: 20px;
+}
