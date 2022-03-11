@@ -4,7 +4,8 @@ import SketchObj from './cv/obj_detect.js';
 import SketchPose from './cv/pose_detect.js';
 import SketchFace from './cv/face_detect.js';
 import SketchHand from './cv/hand_detect.js';
-import logo from './image1.png';
+import First from './First.js';
+
 
 class App extends React.Component {
   constructor(props) {
@@ -16,6 +17,7 @@ class App extends React.Component {
   SketchPose = SketchPose;
   SketchFace = SketchFace;
   SketchHand = SketchHand;
+
 
   start = () =>{
     this.cvP5 = new p5(this.SketchObj, this.cvRef.current)
@@ -48,10 +50,10 @@ class App extends React.Component {
   render() {
     return (
       <div class="center">
-        <img src={logo} alt="logo"></img>
-        <h1>   </h1>
+        <First></First>
         <div></div>
-        <h2>Premier kit: Vision par Ordinateur</h2>
+        <h2 class='title1'>Module découverte</h2>
+        <h2 class='at1'>Atelier n'2</h2>
 
         <button class='button button1'
           type="button"
@@ -83,7 +85,10 @@ class App extends React.Component {
           onClick={this.stopModel}
         >Stop</button>
 
-        <div ref={this.cvRef}>
+        <div class='rect1'>
+
+          <div ref={this.cvRef} class='rect2'>
+          </div>
         </div>
       </div>
     )

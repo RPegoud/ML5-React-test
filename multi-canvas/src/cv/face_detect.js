@@ -8,8 +8,11 @@ const SketchFace = (p) => {
     let predictions = [];
     
     p.setup = () => {
-        p.createCanvas(640, 480);
+        p.createCanvas(1280, 720);
+        p.centerCanvas();
         video = p.createCapture(p5.VIDEO)
+        video.size(1280, 720);
+        video.volume(0);
         facemesh = ml5.facemesh(video, modelReady);
     
         // This sets up an event that fills the global variable "predictions"
@@ -27,7 +30,7 @@ const SketchFace = (p) => {
     }
 
     p.draw = () => {
-        p.image(video, 0, 0);
+        p.image(video, 0, 0, 1280, 720);
         
         // We call function to draw all keypoints
         drawKeypoints();
